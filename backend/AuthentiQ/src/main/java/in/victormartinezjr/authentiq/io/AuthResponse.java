@@ -2,7 +2,6 @@ package in.victormartinezjr.authentiq.io;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 @Getter
 @AllArgsConstructor
