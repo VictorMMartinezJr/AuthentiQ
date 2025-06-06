@@ -1,10 +1,12 @@
 package in.victormartinezjr.authentiq.config;
 
+import in.victormartinezjr.authentiq.filter.JwtRequestFiler;
 import in.victormartinezjr.authentiq.service.AppUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.filter.CorsFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,8 +28,8 @@ import java.util.List;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-
     private final AppUserDetailsService appUserDetailsService;
+    private final JwtRequestFiler jwtRequestFiler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -36,7 +38,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth.requestMatchers("/login", "/register", "/send-reset-otp", "/reset-password", "/logout")
                         .permitAll().anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .logout(AbstractHttpConfigurer::disable);
+                .logout(AbstractHttpConfigurer::disable)
+                .addFilterBefore(jwtRequestFiler, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
