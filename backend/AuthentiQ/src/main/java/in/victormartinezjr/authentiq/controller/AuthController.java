@@ -2,9 +2,11 @@ package in.victormartinezjr.authentiq.controller;
 
 import in.victormartinezjr.authentiq.io.AuthRequest;
 import in.victormartinezjr.authentiq.io.AuthResponse;
+import in.victormartinezjr.authentiq.io.ResetPasswordRequest;
 import in.victormartinezjr.authentiq.service.AppUserDetailsService;
 import in.victormartinezjr.authentiq.service.ProfileService;
 import in.victormartinezjr.authentiq.util.JwtUtil;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -78,6 +80,14 @@ public class AuthController {
         } catch (Exception ex) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
         }
+    }
 
+    @PostMapping("/reset-password")
+    public void resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        try {
+            profileService.resetPassword(request.getEmail(), request.getOtp(), request.getNewPassword());
+        } catch(Exception ex) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+        }
     }
 }
