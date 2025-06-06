@@ -18,7 +18,8 @@ public class EmailService {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(fromEmail);
         message.setTo(toEmail);
-        message.setSubject("Welcome to my portfolio project!");
-        message.setText("Hello " + name + "! Thank you for testing my project!");
+        message.setSubject("Welcome to my authentication project!");
+        message.setText("Hello " + name + "!\n\nThanks for registering.\n\nBest Regards, \nAuthentiQ Team");
+        mailSender.send(message);
     }
 }
