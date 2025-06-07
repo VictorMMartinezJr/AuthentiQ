@@ -106,6 +106,12 @@ public class ProfileServiceImpl implements ProfileService {
 
         // Save to db
         userRepository.save(existingUser);
+
+        try {
+            emailService.sendOtpEmail(existingUser.getEmail(), otp);
+        } catch (Exception ex) {
+            throw new RuntimeException("Unable to send email");
+        }
     }
 
     @Override
