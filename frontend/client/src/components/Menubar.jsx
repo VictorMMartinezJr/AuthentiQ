@@ -1,13 +1,50 @@
 import { useNavigate } from "react-router-dom";
 import { assets } from "../assets/assets";
-import { useContext, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { AppContext } from "../context/AppContext";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const MenuBar = () => {
-  const { userData } = useContext(AppContext);
+  const { userData, backendURL, setUserData, setIsLoggedIn } =
+    useContext(AppContext);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
+
+  {
+    /*  Close dropdown menu on click anywhere outside menu */
+  }
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  {
+    /* Logout handler */
+  }
+  const handleLogout = async () => {
+    try {
+      const response = await axios.post(`${backendURL}/logout`);
+
+      if (response.status === 200) {
+        setIsLoggedIn(false);
+        setUserData(false);
+        navigate("/");
+      }
+    } catch (error) {
+      toast.error(error.response.data.message);
+    }
+  };
 
   return (
     <nav className="navbar bg-white px-5 py-4 d-flex justify-content-between align-items-center">
@@ -17,10 +54,12 @@ const MenuBar = () => {
         <span className="fw-bold fs-4 text-dark">AuthentiQ</span>
       </div>
 
+      {/* Profile icon and dropdown menu if logged in or a login button if not logged in */}
       {userData ? (
         <div className="position-relative" ref={dropdownRef}>
+          {/* Profile icon */}
           <div
-            className="bg-dark text-white-rounded-circle d-flex justify-content-center align-items-center"
+            className="bg-dark text-white rounded-circle d-flex justify-content-center align-items-center"
             style={{
               width: "40px",
               height: "40px",
@@ -32,6 +71,7 @@ const MenuBar = () => {
             {userData.name[0].toUpperCase()}
           </div>
 
+          {/* Dropdown menu */}
           {dropdownOpen && (
             <div
               className="position-absolute shadow bg-white rounded p-2"
@@ -41,6 +81,7 @@ const MenuBar = () => {
                 zIndex: 100,
               }}
             >
+              {/* Verify email btn */}
               {!userData.isAccountVerified && (
                 <div
                   className="dropdown-item py-1 px-2"
@@ -49,9 +90,11 @@ const MenuBar = () => {
                   Verify Email
                 </div>
               )}
+              {/* Logout btn */}
               <div
                 className="dropdown-item py-1 px-2 text-danger"
                 style={{ cursor: "pointer" }}
+                onClick={handleLogout}
               >
                 Logout
               </div>
@@ -59,6 +102,7 @@ const MenuBar = () => {
           )}
         </div>
       ) : (
+        // OR login btn
         <div
           className="btn btn-outline-dark rounded-pill px-3"
           onClick={() => navigate("/login")}
