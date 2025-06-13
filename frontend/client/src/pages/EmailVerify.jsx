@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { assets } from "../assets/assets";
-import { useContext, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { AppContext } from "../context/AppContext";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -13,6 +13,9 @@ const EmailVerify = () => {
   const navigate = useNavigate();
 
   const handleChange = (e, i) => {
+    {
+      /* Get only #'s */
+    }
     const value = e.target.value.replace(/\D/, "");
     e.target.value = value;
 
@@ -21,12 +24,18 @@ const EmailVerify = () => {
     }
   };
 
+  {
+    /* Go to previous input when user clicks backspace */
+  }
   const handleKeyDown = (e, i) => {
     if (e.key === "Backspace" && !e.target.value && i > 0) {
       inputRef.current[i - 1].focus();
     }
   };
 
+  {
+    /* Paste otp from clipboard into all 6 inputs */
+  }
   const handleOTPPaste = (e) => {
     e.preventDefault();
     const paste = e.clipboardData.getData("text").slice(0, 6).split("");
@@ -66,6 +75,15 @@ const EmailVerify = () => {
       setLoading(false);
     }
   };
+
+  {
+    /* Block navigation to "/email-verify" is user already verified */
+  }
+  useEffect(() => {
+    {
+      isLoggedIn && userData && userData.isAccountVerified && navigate("/");
+    }
+  }, [isLoggedIn, userData]);
 
   return (
     <div
